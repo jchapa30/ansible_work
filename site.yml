@@ -1,0 +1,28 @@
+- hosts: all
+  become: true
+  tasks:
+    - name: Update repository index (Ubuntu)
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install Apache and PHP packages (Ubuntu)
+      ansible.builtin.apt:
+        name:
+          - apache2
+          - libapache2-mod-php
+        state: latest
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Update repository index (Fedora)
+      ansible.builtin.dnf5:
+        update_cache: yes
+      when: ansible_distribution == "Fedora"
+
+    - name: Install Apache and PHP packages (Fedora)
+      ansible.builtin.dnf5:
+        name:
+          - httpd
+          - php
+        state: latest
+      when: ansible_distribution == "Fedora"
