@@ -3,6 +3,10 @@
   become: true
   gather_facts: true
 
+  vars:
+    apache_package: apache2
+    php_package: libapache2-mod-php
+
   tasks:
     - name: Install Apache and PHP on Ubuntu
       ansible.builtin.package:
