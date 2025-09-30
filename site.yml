@@ -1,28 +1,39 @@
+---
 - hosts: all
   become: true
-  tasks:
-    - name: Update repository index (Ubuntu)
+
+  pre_tasks:
+    - name: Update Fedora systems
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+      when: ansible_distribution == "Fedora"
+
+    - name: Update Ubuntu systems
       ansible.builtin.apt:
         update_cache: yes
+        upgrade: dist
       when: ansible_distribution == "Ubuntu"
 
-    - name: Install Apache and PHP packages (Ubuntu)
+  tasks:
+    - name: Install web server packages on Ubuntu web servers
       ansible.builtin.apt:
         name:
           - apache2
           - libapache2-mod-php
         state: latest
-      when: ansible_distribution == "Ubuntu"
+      when:
+        - "'web_servers' in group_names"
+        - ansible_distribution == "Ubuntu"
 
-    - name: Update repository index (Fedora)
-      ansible.builtin.dnf5:
-        update_cache: yes
-      when: ansible_distribution == "Fedora"
-
-    - name: Install Apache and PHP packages (Fedora)
-      ansible.builtin.dnf5:
-        name:
-          - httpd
-          - php
+    - name: Install MariaDB on DB servers
+      ansible.builtin.package:
+        name: mariadb-server
         state: latest
-      when: ansible_distribution == "Fedora"
+      when: "'db_servers' in group_names"
+
+    - name: Ensure services are started and enabled
+      ansible.builtin.service:
+        name: "{{ 'apache2' if 'web_servers' in group_names else 'mariadb' }}"
+        state: started
+        enabled: yes
