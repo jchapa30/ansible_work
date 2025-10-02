@@ -1,0 +1,34 @@
+---
+- name: Setup Lighttpd Web Server
+  hosts: localhost
+  become: yes
+
+  tasks:
+    - name: Ensure apt cache is updated
+      apt:
+        update_cache: yes
+
+    - name: Install Lighttpd
+      apt:
+        name: lighttpd
+        state: present
+
+    - name: Ensure Lighttpd is started and enabled
+      service:
+        name: lighttpd
+        state: started
+        enabled: yes
+
+    - name: Deploy custom index.html
+      copy:
+        dest: /var/www/html/index.html
+        content: |
+          <!DOCTYPE html>
+          <html>
+          <head>
+              <title>Welcome to Lighttpd</title>
+          </head>
+          <body>
+              <h1>It works! Served by Lighttpd via Ansible 🚀</h1>
+          </body>
+          </html>
