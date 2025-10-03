@@ -1,0 +1,14 @@
+---
+- name: Move files
+  hosts: all
+  gather_facts: no
+
+  tasks:
+    - name: Test connectivity with Ansible ping module
+      ansible.builtin.ping:
+
+    - name: Copying files
+      become: true
+      copy:
+       src: /home/jchapa30/some.cfg
+       dest: /tmp 
